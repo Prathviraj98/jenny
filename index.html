@@ -1049,7 +1049,7 @@ return data;
       speechSynthesis: window.speechSynthesis,
       speechRecognition: null,
       aiHistory: JSON.parse(localStorage.getItem('nexus_ai_history')) || [],
-      bookmarks: JSON.parse(localStorage.getItem('nexus_bookmarks')) || [
+      bookmarks: [
         { id: '1', title: 'GitHub', url: 'https://github.com', icon: 'fab fa-github' },
         { id: '2', title: 'YouTube', url: 'https://youtube.com', icon: 'fab fa-youtube' },
         { id: '3', title: 'Reddit', url: 'https://reddit.com', icon: 'fab fa-reddit' },
@@ -1058,6 +1058,23 @@ return data;
         { id: '6', title: 'Wikipedia', url: 'https://wikipedia.org', icon: 'fab fa-wikipedia-w' },
       ]
     };
+
+    // Automatically Fetch Vercel Environment Variables from Serverless API Endpoint (/api/config)
+    async function fetchVercelEnvConfig() {
+      try {
+        const res = await fetch('/api/config');
+        if (res.ok) {
+          const data = await res.json();
+          if (!AppState.groqKey && data.groqKey) {
+            AppState.groqKey = data.groqKey;
+          }
+          if (!AppState.geminiKey && data.geminiKey) {
+            AppState.geminiKey = data.geminiKey;
+          }
+        }
+      } catch (e) {}
+    }
+    fetchVercelEnvConfig();
 
     // Global Modal Controllers (Settings, History, Canvas)
     function openSettings(e) {
